@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShortText Enter – Einstellungen</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>ShortText Enter</h1>
+      <p class="lead">Schreiben Sie im Nachrichtentext einen gespeicherten Kurztext und drücken Sie Enter. Bei einem Treffer wird der Kurztext durch den Volltext ersetzt.</p>
+      <p class="notice">Shift+Enter, Strg+Enter und Alt+Enter werden vom Add-on nicht verändert.</p>
+    </header>
+
+    <section aria-labelledby="editor-heading" class="card">
+      <h2 id="editor-heading">Textbaustein</h2>
+      <form id="snippet-form" novalidate>
+        <div class="field">
+          <label for="shortcut">Kurztext</label>
+          <input id="shortcut" name="shortcut" type="text" required autocomplete="off" spellcheck="false">
+          <span class="hint">Keine Leerzeichen, Tabulatoren oder Zeilenumbrüche.</span>
+        </div>
+        <div class="field">
+          <label for="full-text">Volltext</label>
+          <textarea id="full-text" name="fullText" rows="6" required></textarea>
+          <span class="hint">Mehrere Zeilen sind erlaubt; der Inhalt wird als Klartext eingefügt.</span>
+        </div>
+        <div class="button-row">
+          <button id="save-button" type="submit" class="primary">Hinzufügen</button>
+          <button id="cancel-button" type="button" hidden>Abbrechen</button>
+        </div>
+      </form>
+    </section>
+
+    <section aria-labelledby="settings-heading" class="card">
+      <h2 id="settings-heading">Verhalten</h2>
+      <label class="check-row">
+        <input id="case-sensitive" type="checkbox">
+        Groß-/Kleinschreibung beachten
+      </label>
+      <label class="check-row">
+        <input id="append-enter" type="checkbox">
+        Nach der Ersetzung einen normalen Zeilenumbruch einfügen
+      </label>
+
+      <fieldset class="trigger-key-group">
+        <legend>Auslösetaste für die Ersetzung</legend>
+        <p class="hint">Es kann jeweils nur eine Tastenkombination aktiv sein. Alle anderen Tasten lösen dann nicht aus und arbeiten normal.</p>
+        <label class="check-row">
+          <input type="checkbox" name="trigger-key" id="trigger-enter" value="enter">
+          Enter
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="trigger-key" id="trigger-shift-enter" value="shiftEnter">
+          Shift + Enter
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="trigger-key" id="trigger-ctrl-enter" value="ctrlEnter">
+          Strg + Enter
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="trigger-key" id="trigger-alt-enter" value="altEnter">
+          Alt + Enter
+        </label>
+      </fieldset>
+    </section>
+
+    <section aria-labelledby="list-heading" class="card">
+      <div class="section-heading">
+        <h2 id="list-heading">Gespeicherte Textbausteine</h2>
+        <label class="search-label" for="search">
+          <span>Textbausteine durchsuchen</span>
+          <input id="search" type="search" autocomplete="off">
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Kurztext</th>
+              <th scope="col">Volltext</th>
+              <th scope="col">Aktiv</th>
+              <th scope="col">Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="snippet-list"></tbody>
+        </table>
+      </div>
+      <p id="empty-state" class="empty" hidden>Keine passenden Textbausteine vorhanden.</p>
+    </section>
+
+    <section aria-labelledby="backup-heading" class="card">
+      <h2 id="backup-heading">Sicherung</h2>
+      <div class="import-controls">
+        <label for="import-mode">Importmodus</label>
+        <select id="import-mode">
+          <option value="merge">Mit vorhandenen Einträgen zusammenführen</option>
+          <option value="replace">Vorhandene Einträge ersetzen</option>
+        </select>
+      </div>
+      <div class="button-row">
+        <button id="export-button" type="button">JSON exportieren</button>
+        <button id="import-button" type="button">JSON importieren</button>
+        <input id="import-file" type="file" accept="application/json,.json" hidden>
+      </div>
+      <p class="hint">Beim Zusammenführen bleiben vorhandene Einträge erhalten; importierte Duplikate werden übersprungen.</p>
+    </section>
+
+    <div id="status" class="message status" role="status" aria-live="polite" hidden></div>
+    <div id="error" class="message error" role="alert" hidden></div>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
