@@ -258,18 +258,42 @@
         return;
       }
 
-      const replacementRange = document.createRange();
-      replacementRange.setStart(tokenInfo.start.node, tokenInfo.start.offset);
-      replacementRange.setEnd(range.startContainer, range.startOffset);
-
       event.preventDefault();
       event.stopPropagation();
-      selection.removeAllRanges();
-      selection.addRange(replacementRange);
 
+      // Den Ersatztext zuerst direkt an der Cursorposition einfuegen und
+      // erst danach den alten Kurztext davor loeschen. Wuerde man zuerst
+      // loeschen, waere die Zeile fuer einen Moment leer, und Geckos Editor
+      // kann in diesem Zwischenzustand einen direkt davorstehenden
+      // Zeilenumbruch (<br> bzw. Blockgrenze) als ueberfluessig entfernen.
       if (!replaceSelectionWithText(fullText)) {
         insertPlainTextFallback(selection, fullText);
       }
+
+      // Anker ans Ende des neu eingefuegten Volltexts merken. Ranges passen
+      // ihre Grenzen automatisch an nachfolgende DOM-Aenderungen an, daher
+      // zeigt dieser Range nach dem Loeschen des alten Kurztexts (der davor
+      // liegt) weiterhin korrekt auf das Ende des eingefuegten Textes.
+      const insertEndRange = selection.getRangeAt(0).cloneRange();
+
+      // "range" ist die Cursorposition von VOR dem Einfuegen, also genau die
+      // Grenze zwischen dem alten Kurztext und dem neu eingefuegten
+      // Volltext.
+      const deletionRange = document.createRange();
+      deletionRange.setStart(tokenInfo.start.node, tokenInfo.start.offset);
+      deletionRange.setEnd(range.startContainer, range.startOffset);
+      selection.removeAllRanges();
+      selection.addRange(deletionRange);
+      if (!replaceSelectionWithText("")) {
+        insertPlainTextFallback(selection, "");
+      }
+
+      // Cursor wieder ans Ende des eingefuegten Volltexts setzen, nicht an
+      // den Anfang der eben geloeschten Stelle (dorthin kollabiert die
+      // Selektion nach dem Loeschen von selbst).
+      selection.removeAllRanges();
+      selection.addRange(insertEndRange);
+
       if (appendEnter) {
         insertNormalEnter(selection);
       }
